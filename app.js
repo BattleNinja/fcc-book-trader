@@ -14,7 +14,9 @@ var flash = require('connect-flash');
 
 var app = express();
 // ------------------Connect to mongodb----------------------//
-mongoose.connect('mongodb://localhost/book');
+var mongourl = "mongodb://zhang:1234@ds161262.mlab.com:61262/book";
+// mongoose.connect('mongodb://localhost/book');
+mongoose.connect(mongourl);
 mongoose.Promise = global.Promise;
 var db = mongoose.connection;
 
