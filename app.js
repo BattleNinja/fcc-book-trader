@@ -86,6 +86,7 @@ app.use('/', router);
 app.use('/user',user);
 app.use('/api',api);
 // ------------------listen on 3000----------------------//
-var server = app.listen(3000, function() {
-  console.log('Server is listening on',3000);
+app.set('port', (process.env.PORT || 3000));
+app.listen(app.get('port'), function() {
+  console.log('Node app is running on port', app.get('port'));
 });
