@@ -32,7 +32,7 @@
 
     componentWillMount(){
       let email = document.getElementById('email').value;
-      let url = "http://localhost:3000/api/booklist/"+email;
+      let url = "api/booklist/"+email;
             fetch(url).then((data) => {
                 return data.json();
             }).then(json => {
