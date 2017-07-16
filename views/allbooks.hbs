@@ -1,0 +1,153 @@
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.6.0/react.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.6.0/react-dom.js"></script>
+<script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+
+
+<input type="hidden" id='email' value={{user.email}}>
+
+<div id='mybooks'>
+</div>
+
+<script type="text/babel">
+  class Booklist extends React.Component{
+    constructor() {
+    super();
+    this.transfer=this.transfer.bind(this);
+    this.cancelRequest = this.cancelRequest.bind(this);
+    this.changeStatus = this.changeStatus.bind(this);
+    this.state = {
+      datas:[],
+      status:true,
+      buttonWord:'Swwitch to Trade Request'
+      };
+    }
+    componentWillMount(){
+      let email = document.getElementById('email').value;
+      let url = "api/allbooks/";
+            fetch(url).then((data) => {
+                return data.json();
+            }).then(json => {
+                this.setState({
+                    datas: json,
+                    email: email
+                });
+            });
+    }
+
+    requestlist(){
+      let email = document.getElementById('email').value;
+      if(!this.state.status){
+
+
+        return this.state.datas.map((item,index)=>{
+                  if(item.newowner===email && !item.status){
+                    return(
+                      <li key={index} className="collection-item">
+                        <div>
+                          {item.title}
+                          <a onClick={()=>this.cancelRequest(index)}  className="secondary-content"><i className="material-icons">delete</i></a>
+                        </div>
+                      </li>
+                    );
+                  }
+                });
+      }
+    }
+
+    cancelRequest(index){
+      let owner = this.state.datas[index].owner;
+      let title = this.state.datas[index].title;
+      let email = this.state.email;
+      let cancelTransferUrl = "api/canceltransfer?owner="+owner+"&title="+title;
+      fetch(cancelTransferUrl);
+      let allBookUrl = "api/allbooks/";
+            fetch(allBookUrl).then((data) => {
+                return data.json();
+            }).then(json => {
+                this.setState({
+                    datas: json,
+                });
+            });
+    }
+
+
+    booklist(){
+      if(this.state.status){
+
+
+      return this.state.datas.map((item,index)=>{
+
+          if(item.newowner==='' && item.owner!==this.state.email){
+            return (
+              <div key={index} className="cover">
+                <div className="card">
+                  <div className="card-image">
+                    <img src={item.thumbnail} />
+                  </div>
+                  <button onClick={()=>this.transfer(index)} className='transfer'><i className="material-icons">swap_vert</i></button>
+                </div>
+              </div>);
+            }else{
+              return (
+                <div key={index} className="cover">
+                  <div className="card">
+                    <div className="card-image">
+                      <img src={item.thumbnail} />
+                    </div>
+                  </div>
+                </div>);
+          }
+
+        });
+      }
+    }
+
+    transfer(index){
+      let owner = this.state.datas[index].owner;
+      let title = this.state.datas[index].title;
+      let email = this.state.email;
+      let url = "api/transfer?owner="+owner+"&title="+title+"&newowner="+email ;
+      fetch(url);
+      let allBookUrl = "api/allbooks/";
+            fetch(allBookUrl).then((data) => {
+                return data.json();
+            }).then(json => {
+                this.setState({
+                    datas: json
+                });
+            });
+    }
+    changeStatus(){
+      let buttonWord = this.state.status?'Switch to Trade Request':'Switch to Book List';
+      let status = !this.state.status;
+      this.setState({
+          status:status,
+          buttonWord:buttonWord
+      });
+    }
+
+
+
+    render(){
+      return(
+        <div >
+          <button className='btn' onClick={this.changeStatus}>{this.state.buttonWord}</button>
+          <br/>
+          <ul className="collection">
+            {this.requestlist()}
+          </ul>
+          {this.booklist()}
+        </div>
+      );
+
+    }
+
+
+  }
+
+  ReactDOM.render(<Booklist />, document.getElementById('mybooks'));
+
+
+
+
+</script>

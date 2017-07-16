@@ -1,0 +1,60 @@
+.wrapper{
+  margin:0px;
+  padding:20px 20%;
+}
+
+.card-panel{
+  padding:10px !important;
+  color:#fff;
+}
+
+nav .brand-logo.left {
+    left: 2rem !important;
+}
+.cover{
+  display: inline-block;
+  border-radius: 4px;
+  padding: 3px;
+  margin: 3px;
+}
+
+.close,.transfer{
+  position:absolute;
+  bottom:2px;
+  left:2px;
+  color: #eee;
+  opacity: .5;
+  font-size: 6px;
+  font-weight: 700;
+  line-height: 1;
+  border-radius:20%;
+  border:none;
+  background-color:#222;
+}
+
+.close:hover{
+  color:red;
+}
+.transfer:hover{
+  color:red;
+}
+.close .material-icons{
+  font-size: 16px;
+}
+
+.secondary-content .material-icons{
+  cursor: pointer;
+}
+
+.secondary-content:hover{
+  color:#eee;
+}
+
+.secondary-content{
+  margin-left:5px;
+  cursor:pointer;
+}
+.collection{
+  border-color: #ec888d !important;
+  margin:3rem 0 1rem 0 !important;
+}

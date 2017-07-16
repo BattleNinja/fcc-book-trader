@@ -1,0 +1,15 @@
+<h1>Signup</h1>
+
+{{# if errors}}
+    {{# each errors}}
+        <div class="card-panel #64b5f6 blue lighten-2">{{this.msg}}</div>
+    {{/ each}}
+{{/ if}}
+
+<form class="" action="/user/signup" method="POST">
+  <input type="text" name="name" placeholder="Name">
+  <input type="text" name="email" placeholder="Email">
+  <input type="password" name="password" placeholder="Password">
+  <input type="password" name="password2" placeholder="Password Again">
+  <button type="submit" class='btn' name="button">Signup</button>
+</form>

@@ -1,0 +1,203 @@
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.6.0/react.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.6.0/react-dom.js"></script>
+<script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+
+<br/><br/><br/><br/><br/>
+<!-- <form class="" action="/" method="post">
+  <div class="input-field"> -->
+    <input type="hidden" id='email' value={{user.email}}>
+    <!-- <input id="newbook" type="text" name="book" class="validate">
+    <label class="active" for="newbook">New Book</label>
+  </div>
+  <button type="submit" class="btn" name="add">Add</button>
+</form> -->
+<div id='mybooks'>
+</div>
+
+<script type="text/babel">
+  class Booklist extends React.Component{
+    constructor() {
+    super();
+    this.addNewBook=this.addNewBook.bind(this);
+    this.deletBook = this.deletBook.bind(this);
+    this.accept = this.accept.bind(this);
+    this.reject = this.reject.bind(this);
+    this.changeStatus = this.changeStatus.bind(this);
+    this.state = {
+      datas:[],
+      status:true,
+      buttonWord:'Swwitch to Trade Request'
+      };
+    }
+
+    componentWillMount(){
+      let email = document.getElementById('email').value;
+      let url = "http://localhost:3000/api/booklist/"+email;
+            fetch(url).then((data) => {
+                return data.json();
+            }).then(json => {
+                this.setState({
+                    datas: json,
+                    email:email
+                });
+            });
+    }
+
+    thumbnaillist(){
+      if (this.state.status){
+        return this.state.datas.map((item,index)=>{
+                  return (
+                    <div key={index} className="cover">
+                      <div className="card">
+                        <div className="card-image">
+                          <img height="auto" width='20%' src={item.thumbnail} />
+                        </div>
+                        <button onClick={()=>this.deletBook(index)} className='close'><i className="material-icons">delete</i></button>
+                      </div>
+                    </div>
+                  );
+                });
+      }
+
+
+    }
+
+    addform(){
+      return(
+        <div>
+          <form onClick={this.addNewBook}>
+            <div className="input-field">
+              <input id="newbook" type="text" name="book" className="validate" ref='book'/>
+              <label className="active" >New Book</label>
+            </div>
+            <button type='submit' className="btn" name="add">Add</button>
+          </form>
+        </div>
+      );
+    }
+    addFormAndThumbnail(){
+      if(this.state.status){
+        return(
+          <div>
+            {this.addform()}
+            <div >
+              {this.thumbnaillist()}
+            </div>
+          </div>
+        );
+      }
+    }
+    addNewBook(e){
+      e.preventDefault();
+      let bookName = this.refs.book.value;
+      let email = document.getElementById('email').value;
+      if(bookName){
+        let url = "api/search?email="+email+"&bookName="+bookName ;
+        fetch(url).then((data) => {
+                  return data.json();
+              }).then(json => {
+                  this.setState({
+                      datas: json
+                  });
+              });
+      }
+
+    }
+
+    deletBook(key){
+      let title = this.state.datas[key].title;
+      let email = document.getElementById('email').value;
+      let url = "api/delet?email="+email+"&title="+title ;
+      console.log(url);
+      fetch(url);
+      let newdatas = this.state.datas;
+      newdatas.splice(key,1)
+      this.setState({
+        datas:newdatas
+      });
+
+    }
+    acceptlist(){
+      let email = document.getElementById('email').value;
+      if(!this.state.status){
+        return this.state.datas.map((item,index)=>{
+                  if(item.newowner.length>0 && item.newowner!=this.state.email && !item.status){
+                    return(
+                      <li key={index} className="collection-item">
+                        <div>
+                          {item.title}
+                          <a onClick={()=>this.accept(item.owner,item.title)}  className="secondary-content">Accept</a>
+                          <a onClick={()=>this.reject(item.owner,item.title)}  className="secondary-content">Reject</a>
+                        </div>
+                      </li>
+                    );
+                  }
+                });
+      }
+    }
+
+    accept(owner,title){
+      let url = "api/accepttransfer?owner="+owner+"&title="+title;
+      fetch(url);
+      let datas = this.state.datas;
+      for(let i=0;i<datas.length;i++){
+        if (datas[i].title ===title){
+          datas[i].status=true;
+          break;
+        }
+      }
+      this.setState({
+        datas:datas
+      });
+    }
+
+
+
+
+    reject(owner,title){
+      let cancelTransferUrl = "api/canceltransfer?owner="+owner+"&title="+title;
+      fetch(cancelTransferUrl);
+      let datas = this.state.datas;
+      for(let i=0;i<datas.length;i++){
+        if (datas[i].title ===title){
+          datas[i].newowner='';
+          break;
+        }
+      }
+      this.setState({
+        datas:datas
+      });
+    }
+
+    changeStatus(){
+      let buttonWord = this.state.status?'Switch to Trade Request':'Switch to Book List';
+      let status = !this.state.status;
+      this.setState({
+          status:status,
+          buttonWord:buttonWord
+      });
+    }
+
+
+
+    render(){
+      return (
+        <div>
+            <button className='btn' onClick={this.changeStatus}>{this.state.buttonWord}</button>
+            <ul className="collection">
+              {this.acceptlist()}
+            </ul>
+            {this.addFormAndThumbnail()}
+        </div>
+      );
+    }
+
+  }
+
+  ReactDOM.render(<Booklist />, document.getElementById('mybooks'));
+
+
+
+
+
+</script>
